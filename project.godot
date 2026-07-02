@@ -12,8 +12,8 @@ config_version=5
 
 run/main_scene="res://Scenes/Main.tscn"
 config/name="HakimiAdventure"
-config/description="哈基米大冒险 - 3D第一人称回合制RPG"
-config/tags=PackedStringArray("3D", "RPG", "TurnBased", "DungeonCrawler")
+config/description="哈基米大冒险 - 3D第一人称即时动作RPG"
+config/tags=PackedStringArray("3D", "RPG", "ActionRPG", "DungeonCrawler")
 config/features=PackedStringArray("4.7", "C#")
 config/icon="res://icon.svg"
 

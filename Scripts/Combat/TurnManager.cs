@@ -3,7 +3,8 @@ using Godot;
 namespace HakimiAdventure;
 
 /// <summary>
-/// 回合制战斗管理器 — 管理战斗流程：回合切换、行动队列、胜负判定。
+/// 战斗管理器 — 管理类国王密令风格战斗流程：行动阶段切换、队列、胜负判定。
+/// 注：King's Field 为即时体力制，此模块采用信号驱动的阶段切换来模拟战斗节奏。
 /// </summary>
 public partial class TurnManager : Node
 {
@@ -37,14 +38,14 @@ public partial class TurnManager : Node
         EmitSignal(SignalName.PlayerAction);
     }
 
-    /// <summary>玩家行动结束 → 切换到敌人回合</summary>
+    /// <summary>玩家行动结束 → 切换到敌人阶段</summary>
     public void EndPlayerTurn()
     {
         State = CombatState.EnemyTurn;
         EmitSignal(SignalName.EnemyAction);
     }
 
-    /// <summary>敌人回合结束 → 下一回合</summary>
+    /// <summary>敌人阶段结束 → 下一行动阶段</summary>
     public void EndEnemyTurn()
     {
         NextTurn();
