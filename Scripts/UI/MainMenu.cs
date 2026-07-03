@@ -10,7 +10,7 @@ namespace HakimiAdventure.UI;
 [GlobalClass]
 public partial class MainMenu : Node
 {
-    private const string TestScene = "res://Scenes/Test/GreyboxRoom.tscn";
+    private const string TestScene = "res://Scenes/Levels/MazeLevel1.tscn";
 
     private Control _root = null!;
     private Panel _settingsPanel = null!;

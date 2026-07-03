@@ -28,6 +28,11 @@ public partial class AudioManager : Node
     private int _sfxIdx    = -1;
     private int _voiceIdx  = -1;
 
+    // ── BGM 状态 ──
+    private AudioStreamPlayer? _bgmPlayer;
+    private bool _inCombat;
+    public  bool InCombat { get => _inCombat; set { _inCombat = value; UpdateBgm(); } }
+
     public override void _EnterTree()
     {
         if (Instance != null)
@@ -86,8 +91,42 @@ public partial class AudioManager : Node
     /// <summary> 在 BGM Bus 播放音乐（自动停止当前 BGM） </summary>
     public void PlayBgm(AudioStream stream, float pitchScale = 1.0f)
     {
-        StopBus(_bgmIdx);
-        PlayOnBus(_bgmIdx, stream, pitchScale);
+        if (_bgmPlayer != null && IsInstanceValid(_bgmPlayer))
+            _bgmPlayer.Stop();
+
+        _bgmPlayer = new AudioStreamPlayer
+        {
+            Stream = stream,
+            PitchScale = pitchScale,
+            Bus = AudioServer.GetBusName(_bgmIdx)
+        };
+        GetTree().Root.AddChild(_bgmPlayer);
+        _bgmPlayer.Play();
+    }
+
+    /// <summary> 根据战斗状态切换 BGM </summary>
+    private void UpdateBgm()
+    {
+        if (_inCombat)
+            PlayBgm(SfxGenerator.CombatBgm());
+        else
+            PlayBgm(SfxGenerator.ExploreBgm());
+    }
+
+    /// <summary> 检测附近是否有活跃敌人 </summary>
+    public void CheckCombatState()
+    {
+        var enemies = GetTree().GetNodesInGroup("enemies");
+        var player = GetTree().GetFirstNodeInGroup("player") as Node3D;
+        if (player == null) return;
+
+        var nearEnemy = false;
+        foreach (Node3D e in enemies)
+        {
+            if (e.GlobalPosition.DistanceTo(player.GlobalPosition) < 15f)
+            { nearEnemy = true; break; }
+        }
+        InCombat = nearEnemy;
     }
 
     /// <summary> 在 Voice Bus 播放语音 </summary>

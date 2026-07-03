@@ -166,6 +166,10 @@ public partial class PlayerController : CharacterBody3D, IDamageable
         // ── 脚步声 ──
         UpdateFootstep(dt);
 
+        // ── BGM 战斗检测 ──
+        if (Engine.GetFramesSinceReady() % 30 == 0)
+            AudioManager.Instance?.CheckCombatState();
+
         // ── 动画 ──
         UpdateAnimation();
     }

@@ -42,4 +42,11 @@ public static class SfxGenerator
     public static AudioStreamWav DeathSfx()         => CreateTone(150f, 0.5f, 0.5f);
     public static AudioStreamWav PickupSfx()        => CreateTone(1000f, 0.12f, 0.3f);
     public static AudioStreamWav CheckpointSfx()    => CreateTone(600f, 0.3f, 0.35f);
+    public static AudioStreamWav BossRoarSfx()       => CreateTone(100f, 0.8f, 0.6f);
+    public static AudioStreamWav ExplosionSfx()       => CreateTone(60f, 0.4f, 0.5f);
+
+    // ── BGM 占位 (1 秒循环) ──
+    public static AudioStreamWav ExploreBgm() => CreateTone(200f, 1.0f, 0.15f);
+    public static AudioStreamWav CombatBgm()  => CreateTone(300f, 1.0f, 0.2f);
+    public static AudioStreamWav BossBgm()    => CreateTone(80f, 1.0f, 0.25f);
 }

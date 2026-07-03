@@ -1,0 +1,68 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Core/MazeGenerator.cs" id="1"]
+[ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="2"]
+[ext_resource type="Script" path="res://Scripts/Player/CameraController.cs" id="3"]
+[ext_resource type="Script" path="res://Scripts/Combat/StaminaManager.cs" id="4"]
+[ext_resource type="Script" path="res://Scripts/Combat/WeaponController.cs" id="5"]
+[ext_resource type="Script" path="res://Scripts/Combat/LockOnSystem.cs" id="6"]
+[ext_resource type="Script" path="res://Scripts/Dialogue/DialogueController.cs" id="7"]
+[ext_resource type="Script" path="res://Scripts/UI/HUD.cs" id="8"]
+[ext_resource type="Script" path="res://Scripts/Growth/LevelUpController.cs" id="9"]
+[ext_resource type="Script" path="res://Scripts/Inventory/InventorySystem.cs" id="10"]
+[ext_resource type="Script" path="res://Scripts/Magic/MagicSystem.cs" id="11"]
+[ext_resource type="Script" path="res://Scripts/Growth/ExperienceManager.cs" id="12"]
+[ext_resource type="Script" path="res://Scripts/Growth/AttributeSystem.cs" id="13"]
+[ext_resource type="Resource" path="res://Resources/Spells/fireball.tres" id="14"]
+[ext_resource type="Resource" path="res://Resources/Spells/heal.tres" id="15"]
+
+[node name="MazeLevel" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 8)
+script = ExtResource("2")
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+script = ExtResource("3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("shape_player")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player"]
+
+[node name="StaminaManager" type="Node" parent="Player"]
+script = ExtResource("4")
+
+[node name="WeaponController" type="Node3D" parent="Player"]
+script = ExtResource("5")
+
+[node name="LockOnSystem" type="Node" parent="Player"]
+script = ExtResource("6")
+
+[node name="InventorySystem" type="Node" parent="Player"]
+script = ExtResource("10")
+
+[node name="MagicSystem" type="Node" parent="Player"]
+script = ExtResource("11")
+LearnedSpells = [ExtResource("14"), ExtResource("15")]
+
+[node name="ExperienceManager" type="Node" parent="Player"]
+script = ExtResource("12")
+
+[node name="AttributeSystem" type="Node" parent="Player"]
+script = ExtResource("13")
+
+[node name="DialogueController" type="Node" parent="." groups=["dialogue_controller"]]
+script = ExtResource("7")
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("8")
+
+[node name="LevelUpUI" type="CanvasLayer"]
+script = ExtResource("9")
+
+[sub_resource type="CapsuleShape3D" id="shape_player"]
+radius = 0.3
+height = 1.6
