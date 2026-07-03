@@ -149,7 +149,7 @@ public partial class MazeGenerator : Node3D
         var npc = new Npc
         {
             DisplayName = "向导",
-            Dialogue = ResourceLoader.Load<DialogueResource>("res://Resources/Dialogues/sample_dialogue.tres")
+            Dialogue = ResourceLoader.Load<DialogueResource>("res://Resources/Dialogues/story_intro.tres")
         };
         npc.Position = new Vector3(x, 0, z);
         npc.AddChild(new CollisionShape3D { Shape = new CapsuleShape3D { Radius = 0.3f, Height = 1.4f } });

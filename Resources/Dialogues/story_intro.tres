@@ -1,0 +1,83 @@
+[gd_resource type="Resource" load_steps=12 format=3]
+
+[ext_resource type="Script" id="1" path="res://Scripts/Dialogue/DialogueResource.cs"]
+[ext_resource type="Script" id="2" path="res://Scripts/Dialogue/DialogueResource.cs"]
+[ext_resource type="Script" id="3" path="res://Scripts/Dialogue/DialogueResource.cs"]
+
+[sub_resource type="Resource" id="opt_2"]
+script = ExtResource("3")
+Text = "我有问题要问…"
+NextNodeID = "q1"
+SetVar = "asked"
+SetVarValue = "started"
+
+[sub_resource type="Resource" id="opt_3"]
+script = ExtResource("3")
+Text = "我准备好了。"
+NextNodeID = "ready"
+
+[sub_resource type="Resource" id="opt_q1a"]
+script = ExtResource("3")
+Text = "这里有什么危险？"
+NextNodeID = "q1a_ans"
+
+[sub_resource type="Resource" id="opt_q1b"]
+script = ExtResource("3")
+Text = "我该往哪走？"
+NextNodeID = "q1b_ans"
+
+[sub_resource type="Resource" id="opt_back"]
+script = ExtResource("3")
+Text = "明白了。"
+NextNodeID = "start"
+
+[sub_resource type="Resource" id="opt_start"]
+script = ExtResource("3")
+Text = "出发！"
+NextNodeID = "go"
+
+[sub_resource type="Resource" id="node_intro"]
+script = ExtResource("2")
+NodeID = "start"
+SpeakerName = "???\n旁白"
+Text = "很久以前，三件远古遗物被封印在迷宫深处…现在封印正在瓦解。你，被选中之人，必须回收它们。"
+Options = [SubResource("opt_2")]
+
+[sub_resource type="Resource" id="node_q1"]
+script = ExtResource("2")
+NodeID = "q1"
+SpeakerName = "旁白"
+Text = "尽管问，旅者。"
+Options = [SubResource("opt_q1a"), SubResource("opt_q1b")]
+
+[sub_resource type="Resource" id="node_q1a"]
+script = ExtResource("2")
+NodeID = "q1a_ans"
+SpeakerName = "旁白"
+Text = "三个迷宫各有一个强大的守护者：石像守卫（迷宫）、血族伯爵（墓穴）、冰霜巨人（冰洞）。击败它们，取回遗物。"
+Options = [SubResource("opt_back")]
+
+[sub_resource type="Resource" id="node_q1b"]
+script = ExtResource("2")
+NodeID = "q1b_ans"
+SpeakerName = "旁白"
+Text = "从迷宫开始，向西进入墓穴，向东前往冰洞。每个迷宫深处都有一个检查点，死亡后可从那里重来。"
+Options = [SubResource("opt_back")]
+
+[sub_resource type="Resource" id="node_ready"]
+script = ExtResource("2")
+NodeID = "ready"
+SpeakerName = "旁白"
+Text = "你的命运在等待。愿光明指引你。"
+Options = [SubResource("opt_start")]
+
+[sub_resource type="Resource" id="node_go"]
+script = ExtResource("2")
+NodeID = "go"
+SpeakerName = "旁白"
+Text = "出发吧，英雄。"
+Options = []
+
+[resource]
+script = ExtResource("1")
+Nodes = [SubResource("node_intro"), SubResource("node_q1"), SubResource("node_q1a"), SubResource("node_q1b"), SubResource("node_ready"), SubResource("node_go")]
