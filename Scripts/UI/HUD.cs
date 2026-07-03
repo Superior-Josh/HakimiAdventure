@@ -20,6 +20,9 @@ public partial class HUD : CanvasLayer
     private TextureProgressBar _staminaBar = null!;
     private Label _hpLabel = null!;
     private TextureRect _lockOnIndicator = null!;
+    private Label _goldLabel = null!;
+    private int _lastGold;
+    private float _goldAnimTimer;
     private Control _hudRoot = null!;
 
     public override void _Ready()
@@ -30,6 +33,7 @@ public partial class HUD : CanvasLayer
         CreateHpBar();
         CreateStaminaBar();
         CreateLockOnIndicator();
+        CreateGoldDisplay();
     }
 
     public override void _Process(double delta)
@@ -48,6 +52,7 @@ public partial class HUD : CanvasLayer
         UpdateHpBar();
         UpdateStaminaBar();
         UpdateLockOnIndicator();
+        UpdateGoldDisplay((float)delta);
     }
 
     // ── HP 条 ──
@@ -171,6 +176,50 @@ public partial class HUD : CanvasLayer
 
         _lockOnIndicator.AddChild(panel);
         _hudRoot.AddChild(_lockOnIndicator);
+    }
+
+    // ── 金币 ──
+
+    private void CreateGoldDisplay()
+    {
+        _goldLabel = new Label
+        {
+            Name = "GoldLabel",
+            Position = new Vector2(1600, 20),
+            Size = new Vector2(200, 36),
+            HorizontalAlignment = HorizontalAlignment.Right,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        _goldLabel.AddThemeColorOverride("font_color", new Color(1f, 0.85f, 0.2f));
+        _goldLabel.AddThemeFontSizeOverride("font_size", 22);
+        _hudRoot.AddChild(_goldLabel);
+
+        _lastGold = -1;
+    }
+
+    private void UpdateGoldDisplay(float delta)
+    {
+        if (_player == null) return;
+
+        if (_player.Gold != _lastGold)
+        {
+            _lastGold = _player.Gold;
+            _goldAnimTimer = 0.5f;
+        }
+
+        if (_goldAnimTimer > 0)
+        {
+            _goldAnimTimer -= delta;
+            // 缩放动画
+            var scale = 1f + (_goldAnimTimer / 0.5f) * 0.3f;
+            _goldLabel.Scale = new Vector2(scale, scale);
+        }
+        else
+        {
+            _goldLabel.Scale = Vector2.One;
+        }
+
+        _goldLabel.Text = $"💰 {_player.Gold}";
     }
 
     private void UpdateLockOnIndicator()

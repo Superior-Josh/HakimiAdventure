@@ -1,4 +1,5 @@
 using Godot;
+using HakimiAdventure.Audio;
 using HakimiAdventure.Combat;
 using HakimiAdventure.Core;
 
@@ -207,6 +208,7 @@ public partial class EnemyAI : CharacterBody3D, IDamageable
 
     private void PerformAttack()
     {
+        AudioManager.Instance?.PlaySfx(SfxGenerator.AttackSfx());
         var dist = GlobalPosition.DistanceTo(_player.GlobalPosition);
         if (dist <= Config.AttackRange + 1.0f)
         {
@@ -267,6 +269,7 @@ public partial class EnemyAI : CharacterBody3D, IDamageable
     private void HandleDeath()
     {
         PlayAnim(CharacterAnimState.Death);
+        AudioManager.Instance?.PlaySfx(SfxGenerator.DeathSfx());
         Velocity = Vector3.Zero;
         SetCollisionLayerValue(1, false);
 

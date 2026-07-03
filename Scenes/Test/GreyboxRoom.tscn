@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=34 format=3]
 
 ; ── 外部资源 ──
 
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Scripts/Combat/LockOnSystem.cs" id="5"]
 [ext_resource type="Script" path="res://Scripts/Enemy/EnemyAI.cs" id="6"]
 [ext_resource type="Script" path="res://Scripts/UI/HUD.cs" id="7"]
+[ext_resource type="Script" path="res://Scripts/Core/CheckPoint.cs" id="8"]
 
 ; ── 子资源 ──
 
@@ -88,6 +89,22 @@ height = 1.4
 [sub_resource type="BoxMesh" id="box_enemy_body"]
 size = Vector3(0.7, 1.2, 0.5)
 material = SubResource("mat_enemy")
+
+; ── 隔断墙资源 ──
+
+[sub_resource type="BoxMesh" id="box_divider_l"]
+size = Vector3(8.5, 3, 0.5)
+material = SubResource("mat_grey")
+
+[sub_resource type="BoxMesh" id="box_divider_r"]
+size = Vector3(8.5, 3, 0.5)
+material = SubResource("mat_grey")
+
+[sub_resource type="BoxShape3D" id="shape_divider_l"]
+size = Vector3(8.5, 3, 0.5)
+
+[sub_resource type="BoxShape3D" id="shape_divider_r"]
+size = Vector3(8.5, 3, 0.5)
 
 ; ── 场景树 ──
 
@@ -175,7 +192,7 @@ mesh = SubResource("box_light_panel")
 ; ── 玩家 ──
 
 [node name="Player" type="CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 6)
 script = ExtResource("1")
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
@@ -209,6 +226,48 @@ shape = SubResource("shape_enemy")
 mesh = SubResource("box_enemy_body")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Goblin"]
+
+; ── 隔断墙（z=0，中空 3 单位通道） ──
+
+[node name="DividerWest" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.75, 1.5, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DividerWest"]
+shape = SubResource("shape_divider_l")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="DividerWest"]
+mesh = SubResource("box_divider_l")
+
+[node name="DividerEast" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.75, 1.5, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DividerEast"]
+shape = SubResource("shape_divider_r")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="DividerEast"]
+mesh = SubResource("box_divider_r")
+
+; ── 检查点（南侧房间，通道口附近） ──
+
+[node name="CheckPoint" type="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 2)
+script = ExtResource("8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CheckPoint"]
+shape = SubResource("shape_box")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CheckPoint"]
+mesh = SubResource("box_floor_accent")
+
+; ── 敌人 2（北侧房间） ──
+
+[node name="Goblin2" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, -4)
+script = ExtResource("6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Goblin2"]
+shape = SubResource("shape_enemy")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Goblin2"]
+mesh = SubResource("box_enemy_body")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Goblin2"]
 
 ; ── HUD ──
 

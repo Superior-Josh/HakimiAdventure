@@ -1,4 +1,5 @@
 using Godot;
+using HakimiAdventure.Audio;
 using HakimiAdventure.Core;
 
 namespace HakimiAdventure.Combat;
@@ -56,6 +57,7 @@ public partial class WeaponController : Node3D
         IsAttacking = true;
         _hitRegistered = false;
         _player.PlayAnim(CharacterAnimState.Attack);
+        AudioManager.Instance?.PlaySfx(SfxGenerator.AttackSfx());
 
         // 命中判定计时器
         var timer = new Timer { OneShot = true, WaitTime = LightWindup };
@@ -103,6 +105,7 @@ public partial class WeaponController : Node3D
 
             // 命中！
             HitEnemy(enemy);
+            AudioManager.Instance?.PlaySfx(SfxGenerator.HitSfx());
         }
     }
 
