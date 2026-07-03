@@ -39,6 +39,6 @@ public partial class GameManager : Node
     /// <summary> 退出游戏 </summary>
     public static void QuitGame()
     {
-        GetTree().Quit();
+        Instance?.GetTree()?.Quit();
     }
 }
