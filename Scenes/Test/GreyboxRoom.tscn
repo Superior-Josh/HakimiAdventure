@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3]
+[gd_scene load_steps=38 format=3]
 
 ; ── 外部资源 ──
 
@@ -10,6 +10,9 @@
 [ext_resource type="Script" path="res://Scripts/Enemy/EnemyAI.cs" id="6"]
 [ext_resource type="Script" path="res://Scripts/UI/HUD.cs" id="7"]
 [ext_resource type="Script" path="res://Scripts/Core/CheckPoint.cs" id="8"]
+[ext_resource type="Script" path="res://Scripts/Dialogue/DialogueController.cs" id="9"]
+[ext_resource type="Script" path="res://Scripts/Core/Npc.cs" id="10"]
+[ext_resource type="Resource" path="res://Resources/Dialogues/sample_dialogue.tres" id="11"]
 
 ; ── 子资源 ──
 
@@ -105,6 +108,21 @@ size = Vector3(8.5, 3, 0.5)
 
 [sub_resource type="BoxShape3D" id="shape_divider_r"]
 size = Vector3(8.5, 3, 0.5)
+
+; ── NPC 资源 ──
+
+[sub_resource type="StandardMaterial3D" id="mat_npc"]
+albedo_color = Color(0.2, 0.5, 0.8, 1)
+metallic = 0.3
+roughness = 0.4
+
+[sub_resource type="CapsuleShape3D" id="shape_npc"]
+radius = 0.3
+height = 1.4
+
+[sub_resource type="BoxMesh" id="box_npc_body"]
+size = Vector3(0.6, 1.2, 0.4)
+material = SubResource("mat_npc")
 
 ; ── 场景树 ──
 
@@ -268,6 +286,26 @@ shape = SubResource("shape_enemy")
 mesh = SubResource("box_enemy_body")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Goblin2"]
+
+; ── 对话控制器 ──
+
+[node name="DialogueController" type="Node" groups=["dialogue_controller"]]
+script = ExtResource("9")
+
+; ── NPC 老智者（南侧房间） ──
+
+[node name="WiseMan" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 1, 7)
+script = ExtResource("10")
+DisplayName = "老智者"
+Dialogue = ExtResource("11")
+StartNodeID = "start"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WiseMan"]
+shape = SubResource("shape_npc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WiseMan"]
+mesh = SubResource("box_npc_body")
 
 ; ── HUD ──
 

@@ -4,7 +4,15 @@
 application/config/name="哈基米大冒险"
 application/config/description="类国王密令第一人称即时动作 RPG"
 application/config/icon="res://icon.svg"
-application/run/main_scene="res://Scenes/Test/GreyboxRoom.tscn"
+application/run/main_scene="res://Scenes/MainMenu.tscn"
+
+; ── Autoload ──
+
+[autoload]
+
+GameManager="*res://Scripts/Core/GameManager.cs"
+SaveManager="*res://Scripts/Core/SaveManager.cs"
+AudioManager="*res://Scripts/Audio/AudioManager.cs"
 
 [input]
 

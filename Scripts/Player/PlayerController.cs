@@ -1,5 +1,6 @@
 using Godot;
 using HakimiAdventure.Audio;
+using HakimiAdventure.Dialogue;
 using HakimiAdventure.Core;
 
 namespace HakimiAdventure.Player;
@@ -37,6 +38,7 @@ public partial class PlayerController : CharacterBody3D, IDamageable
     private WeaponController _weapon = null!;
     private LockOnSystem     _lockOn = null!;
     private SaveManager      _save = null!;
+    private DialogueController _dialogue = null!;
     private float _footstepTimer;
     private Vector3 _targetVelocity;
     private CharacterAnimState _currentAnim;
@@ -56,6 +58,8 @@ public partial class PlayerController : CharacterBody3D, IDamageable
         MP = MaxMP;
         Gold = 0;
         Input.MouseMode = Input.MouseModeEnum.Captured;
+
+        _dialogue = GetTree().GetFirstNodeInGroup("dialogue_controller") as DialogueController;
 
         // 尝试读取存档恢复数据
         _save = SaveManager.Instance;
@@ -98,6 +102,11 @@ public partial class PlayerController : CharacterBody3D, IDamageable
         if (@event.IsActionPressed("lock_on"))
         {
             _lockOn?.ToggleLock();
+        }
+
+        if (@event.IsActionPressed("interact") && Input.MouseMode == Input.MouseModeEnum.Captured)
+        {
+            TryInteractWithNpc();
         }
 
         if (@event.IsActionPressed("menu"))
@@ -209,8 +218,6 @@ public partial class PlayerController : CharacterBody3D, IDamageable
     {
         Gold = Mathf.FloorToInt(Gold * 0.9f);
         AudioManager.Instance?.PlaySfx(SfxGenerator.DeathSfx());
-        // 扣 10% 金币
-        Gold = Mathf.FloorToInt(Gold * 0.9f);
 
         // 延迟重生
         var timer = new Timer { OneShot = true, WaitTime = 1.5f };
@@ -229,5 +236,25 @@ public partial class PlayerController : CharacterBody3D, IDamageable
         GlobalPosition = _save.LastCheckpointPos;
         RotationDegrees = new Vector3(0, _save.LastCheckpointYaw, 0);
         PlayAnim(CharacterAnimState.Idle);
+    }
+
+    // ── NPC 交互 ──
+
+    private void TryInteractWithNpc()
+    {
+        if (_dialogue != null && _dialogue.IsDialogueActive()) return;
+
+        var space = GetWorld3D().DirectSpaceState;
+        var from = _camera!.GlobalPosition;
+        var to = from - _camera.GlobalTransform.Basis.Z * 5f;
+
+        var query = PhysicsRayQueryParameters3D.Create(from, to);
+        query.CollideWithAreas = false;
+        var result = space.IntersectRay(query);
+
+        if (result.Count > 0 && result["collider"].AsGodotObject() is Npc npc)
+        {
+            npc.Interact();
+        }
     }
 }

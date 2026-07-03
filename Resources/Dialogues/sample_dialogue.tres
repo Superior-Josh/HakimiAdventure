@@ -1,0 +1,46 @@
+[gd_resource type="Resource" load_steps=8 format=3]
+
+[ext_resource type="Script" id="1" path="res://Scripts/Dialogue/DialogueResource.cs"]
+[ext_resource type="Script" id="2" path="res://Scripts/Dialogue/DialogueNode.cs"]
+[ext_resource type="Script" id="3" path="res://Scripts/Dialogue/DialogueOption.cs"]
+
+[sub_resource type="Resource" id="opt_bye"]
+script = ExtResource("3")
+Text = "再见！"
+NextNodeID = ""
+ConditionVar = ""
+SetVar = ""
+SetVarValue = ""
+
+[sub_resource type="Resource" id="opt_help"]
+script = ExtResource("3")
+Text = "我需要帮助！"
+NextNodeID = "help"
+ConditionVar = ""
+SetVar = "asked_help"
+SetVarValue = "true"
+
+[sub_resource type="Resource" id="opt_leave"]
+script = ExtResource("3")
+Text = "我该走了。"
+NextNodeID = ""
+ConditionVar = "asked_help"
+SetVarValue = ""
+
+[sub_resource type="Resource" id="node_start"]
+script = ExtResource("2")
+NodeID = "start"
+SpeakerName = "老智者"
+Text = "欢迎来到哈基米大冒险… 你准备好面对迷宫中的挑战了吗？"
+Options = [SubResource("opt_help"), SubResource("opt_bye")]
+
+[sub_resource type="Resource" id="node_help"]
+script = ExtResource("2")
+NodeID = "help"
+SpeakerName = "老智者"
+Text = "前方有两个房间，每个房间都有敌人把守。击败它们，收集金币，小心不要死去。检查点会记录你的进度。祝你好运。"
+Options = [SubResource("opt_leave"), SubResource("opt_bye")]
+
+[resource]
+script = ExtResource("1")
+Nodes = [SubResource("node_start"), SubResource("node_help")]
