@@ -1,0 +1,175 @@
+[gd_scene load_steps=22 format=3]
+
+; ── 外部资源 ──
+
+[ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1"]
+[ext_resource type="Script" path="res://Scripts/Player/CameraController.cs" id="2"]
+
+; ── 子资源 ──
+
+[sub_resource type="Environment" id="env_default"]
+ambient_light_color = Color(0.3, 0.3, 0.35, 1)
+ambient_light_source = 0
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="box_floor"]
+size = Vector3(20, 0.5, 20)
+material = SubResource("mat_grey")
+
+[sub_resource type="BoxMesh" id="box_wall"]
+size = Vector3(20, 3, 0.5)
+material = SubResource("mat_grey")
+
+[sub_resource type="BoxMesh" id="box_wall_short"]
+size = Vector3(0.5, 3, 20)
+material = SubResource("mat_grey")
+
+[sub_resource type="BoxShape3D" id="shape_box"]
+size = Vector3(20, 0.5, 20)
+
+[sub_resource type="BoxShape3D" id="shape_wall"]
+size = Vector3(20, 3, 0.5)
+
+[sub_resource type="BoxShape3D" id="shape_wall_short"]
+size = Vector3(0.5, 3, 20)
+
+[sub_resource type="BoxMesh" id="box_pillar"]
+size = Vector3(0.5, 3, 0.5)
+material = SubResource("mat_grey")
+
+[sub_resource type="BoxShape3D" id="shape_pillar"]
+size = Vector3(0.5, 3, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="mat_grey"]
+albedo_color = Color(0.45, 0.45, 0.5, 1)
+metallic = 0.0
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="mat_floor_accent"]
+albedo_color = Color(0.35, 0.35, 0.4, 1)
+metallic = 0.0
+roughness = 0.7
+
+[sub_resource type="BoxMesh" id="box_floor_accent"]
+size = Vector3(1, 0.05, 1)
+material = SubResource("mat_floor_accent")
+
+[sub_resource type="StandardMaterial3D" id="mat_light_wall"]
+albedo_color = Color(0.8, 0.8, 0.7, 1)
+emission_enabled = true
+emission = Color(0.8, 0.8, 0.7, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="BoxMesh" id="box_light_panel"]
+size = Vector3(1.5, 0.1, 1.5)
+material = SubResource("mat_light_wall")
+
+[sub_resource type="CapsuleShape3D" id="shape_player"]
+radius = 0.3
+height = 1.6
+
+; ── 场景树 ──
+
+[node name="WorldEnvironment" type="WorldEnvironment"]
+environment = SubResource("env_default")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D"]
+transform = Transform3D(0.866025, 0.5, 0, -0.433013, 0.75, 0.5, 0.25, -0.433013, 0.866025, 0, 10, 0)
+light_energy = 0.8
+shadow_enabled = true
+shadow_max_distance = 40.0
+
+; ── 地面 ──
+
+[node name="Floor" type="StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("shape_box")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("box_floor")
+
+; ── 北墙 ──
+
+[node name="WallNorth" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -10)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallNorth"]
+shape = SubResource("shape_wall")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallNorth"]
+mesh = SubResource("box_wall")
+
+; ── 南墙 ──
+
+[node name="WallSouth" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 10)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallSouth"]
+shape = SubResource("shape_wall")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallSouth"]
+mesh = SubResource("box_wall")
+
+; ── 东墙 ──
+
+[node name="WallEast" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.5, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallEast"]
+shape = SubResource("shape_wall_short")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallEast"]
+mesh = SubResource("box_wall_short")
+
+; ── 西墙 ──
+
+[node name="WallWest" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 1.5, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
+shape = SubResource("shape_wall_short")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallWest"]
+mesh = SubResource("box_wall_short")
+
+; ── 中心柱子 ──
+
+[node name="Pillar" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.5, -3)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pillar"]
+shape = SubResource("shape_pillar")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pillar"]
+mesh = SubResource("box_pillar")
+
+[node name="Pillar2" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.5, 3)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pillar2"]
+shape = SubResource("shape_pillar")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pillar2"]
+mesh = SubResource("box_pillar")
+
+; ── 氛围灯墙 ──
+
+[node name="LightPanelNorth" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2.5, -9.75)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="LightPanelNorth"]
+mesh = SubResource("box_light_panel")
+
+[node name="LightPanelSouth" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2.5, 9.75)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="LightPanelSouth"]
+mesh = SubResource("box_light_panel")
+
+; ── 玩家 ──
+
+[node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1")
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+script = ExtResource("2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("shape_player")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player"]
+
+; ── OmniLight 补光 ──
+
+[node name="OmniLight3D" type="OmniLight3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+light_energy = 0.3
+omni_range = 15

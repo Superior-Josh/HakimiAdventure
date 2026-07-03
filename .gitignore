@@ -1,0 +1,28 @@
+# Godot engine exports
+*.exe
+*.dmg
+*.zip
+*.pck
+*.pck.trace
+
+# Godot project generated
+.godot/
+import/
+.android/
+.ios/
+exports/
+
+# .NET / Mono
+.mono/
+bin/
+obj/
+*.csproj.user
+*.suo
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vs/
+*.sln.ide/
