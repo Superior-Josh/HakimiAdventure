@@ -2,6 +2,7 @@ using Godot;
 using HakimiAdventure.Audio;
 using HakimiAdventure.Combat;
 using HakimiAdventure.Core;
+using HakimiAdventure.Inventory;
 
 namespace HakimiAdventure.Enemy;
 
@@ -272,6 +273,13 @@ public partial class EnemyAI : CharacterBody3D, IDamageable
         AudioManager.Instance?.PlaySfx(SfxGenerator.DeathSfx());
         Velocity = Vector3.Zero;
         SetCollisionLayerValue(1, false);
+
+        // 经验奖励
+        _player?.AddExpReward(Config.ExpReward);
+
+        // 金币直接给玩家
+        if (_player != null)
+            _player.Gold += Config.GoldReward;
 
         // 延迟移除
         var deathTimer = new Timer { OneShot = true, WaitTime = 2.0f };

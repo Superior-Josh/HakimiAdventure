@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3]
+[gd_scene load_steps=46 format=3]
 
 ; ── 外部资源 ──
 
@@ -13,6 +13,16 @@
 [ext_resource type="Script" path="res://Scripts/Dialogue/DialogueController.cs" id="9"]
 [ext_resource type="Script" path="res://Scripts/Core/Npc.cs" id="10"]
 [ext_resource type="Resource" path="res://Resources/Dialogues/sample_dialogue.tres" id="11"]
+[ext_resource type="Script" path="res://Scripts/Inventory/InventorySystem.cs" id="12"]
+[ext_resource type="Script" path="res://Scripts/Magic/MagicSystem.cs" id="13"]
+[ext_resource type="Script" path="res://Scripts/Growth/ExperienceManager.cs" id="14"]
+[ext_resource type="Script" path="res://Scripts/Growth/AttributeSystem.cs" id="15"]
+[ext_resource type="Script" path="res://Scripts/Inventory/PickupItem.cs" id="16"]
+[ext_resource type="Resource" path="res://Resources/Items/potion_hp.tres" id="17"]
+[ext_resource type="Resource" path="res://Resources/Items/potion_mp.tres" id="18"]
+[ext_resource type="Resource" path="res://Resources/Spells/fireball.tres" id="19"]
+[ext_resource type="Resource" path="res://Resources/Spells/heal.tres" id="20"]
+[ext_resource type="Script" path="res://Scripts/Growth/LevelUpController.cs" id="21"]
 
 ; ── 子资源 ──
 
@@ -231,6 +241,35 @@ script = ExtResource("4")
 [node name="LockOnSystem" type="Node" parent="Player"]
 script = ExtResource("5")
 
+[node name="InventorySystem" type="Node" parent="Player"]
+script = ExtResource("12")
+
+[node name="MagicSystem" type="Node" parent="Player"]
+script = ExtResource("13")
+LearnedSpells = [ExtResource("19"), ExtResource("20")]
+
+[node name="ExperienceManager" type="Node" parent="Player"]
+script = ExtResource("14")
+
+[node name="AttributeSystem" type="Node" parent="Player"]
+script = ExtResource("15")
+
+; ── 可拾取物品（南侧房间） ──
+
+[node name="PickupHP" type="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.5, 8)
+script = ExtResource("16")
+Item = ExtResource("17")
+Count = 3
+AutoPickup = true
+
+[node name="PickupMP" type="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.5, 8)
+script = ExtResource("16")
+Item = ExtResource("18")
+Count = 2
+AutoPickup = true
+
 ; ── 敌人 ──
 
 [node name="Goblin" type="CharacterBody3D"]
@@ -311,6 +350,11 @@ mesh = SubResource("box_npc_body")
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("7")
+
+; ── 升级界面 ──
+
+[node name="LevelUpUI" type="CanvasLayer"]
+script = ExtResource("21")
 
 ; ── OmniLight 补光 ──
 

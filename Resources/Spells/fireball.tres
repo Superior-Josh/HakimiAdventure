@@ -1,0 +1,18 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" id="1" path="res://Scripts/Magic/SpellData.cs"]
+
+[resource]
+script = ExtResource("1")
+ID = "fireball"
+Name = "火球术"
+Description = "发射一枚火球，造成 30 点伤害。"
+MpCost = 15.0
+StaminaCost = 5.0
+Damage = 30.0
+Cooldown = 3.0
+CastTime = 0.3
+Range = 10.0
+IsProjectile = true
+Heals = false
+HealAmount = 0.0

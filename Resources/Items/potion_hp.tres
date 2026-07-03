@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" id="1" path="res://Scripts/Inventory/ItemData.cs"]
+
+[resource]
+script = ExtResource("1")
+ID = "potion_hp"
+Name = "生命药水"
+Description = "恢复 30 点 HP。"
+Type = 0
+MaxStack = 10
+BuyPrice = 15
+SellPrice = 7
+HealHP = 30.0
+HealMP = 0.0

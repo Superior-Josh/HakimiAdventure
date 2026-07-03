@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" id="1" path="res://Scripts/Inventory/ItemData.cs"]
+
+[resource]
+script = ExtResource("1")
+ID = "gold_coin"
+Name = "金币袋"
+Description = "一袋金币。"
+Type = 4
+MaxStack = 99
+BuyPrice = 0
+SellPrice = 10

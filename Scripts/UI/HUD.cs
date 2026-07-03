@@ -1,6 +1,8 @@
 using Godot;
 using HakimiAdventure.Combat;
 using HakimiAdventure.Core;
+using HakimiAdventure.Magic;
+using HakimiAdventure.Growth;
 
 namespace HakimiAdventure.UI;
 
@@ -14,10 +16,14 @@ public partial class HUD : CanvasLayer
     private Player.PlayerController _player = null!;
     private StaminaManager _stamina = null!;
     private LockOnSystem _lockOn = null!;
+    private MagicSystem _magic = null!;
+    private ExperienceManager _exp = null!;
 
     // ── UI 元素 ──
     private TextureProgressBar _hpBar = null!;
     private TextureProgressBar _staminaBar = null!;
+    private TextureProgressBar _mpBar = null!;
+    private TextureProgressBar _expBar = null!;
     private Label _hpLabel = null!;
     private TextureRect _lockOnIndicator = null!;
     private Label _goldLabel = null!;
@@ -32,8 +38,11 @@ public partial class HUD : CanvasLayer
 
         CreateHpBar();
         CreateStaminaBar();
+        CreateMpBar();
+        CreateExpBar();
         CreateLockOnIndicator();
         CreateGoldDisplay();
+        CreateSkillSlots();
     }
 
     public override void _Process(double delta)
@@ -51,8 +60,11 @@ public partial class HUD : CanvasLayer
 
         UpdateHpBar();
         UpdateStaminaBar();
+        UpdateMpBar();
+        UpdateExpBar();
         UpdateLockOnIndicator();
         UpdateGoldDisplay((float)delta);
+        UpdateSkillSlots();
     }
 
     // ── HP 条 ──
@@ -234,6 +246,119 @@ public partial class HUD : CanvasLayer
             // 将指示器放在目标屏幕位置
             var pos = screenPos.Value;
             _lockOnIndicator.Position = pos - _lockOnIndicator.Size * 0.5f;
+        }
+    }
+
+    // ── MP 条 ──
+
+    private void CreateMpBar()
+    {
+        var bg = new NinePatchRect
+        {
+            Name = "MpBarBg",
+            Position = new Vector2(20, 74),
+            Size = new Vector2(300, 16),
+            Modulate = new Color(0.2f, 0.2f, 0.2f, 0.7f)
+        };
+        _hudRoot.AddChild(bg);
+
+        _mpBar = new TextureProgressBar
+        {
+            Name = "MpBar",
+            Position = new Vector2(22, 75),
+            Size = new Vector2(296, 14),
+            MaxValue = 50f,
+            Value = 50f,
+            FillMode = TextureProgressBar.FillModeEnum.LeftToRight,
+            Modulate = new Color(0.3f, 0.4f, 0.9f)
+        };
+        _hudRoot.AddChild(_mpBar);
+    }
+
+    private void UpdateMpBar()
+    {
+        if (_player == null) return;
+        _mpBar.MaxValue = _player.MaxMP;
+        _mpBar.Value = _player.MP;
+    }
+
+    // ── 经验条 ──
+
+    private void CreateExpBar()
+    {
+        var bg = new NinePatchRect
+        {
+            Name = "ExpBarBg",
+            Position = new Vector2(20, 94),
+            Size = new Vector2(300, 12),
+            Modulate = new Color(0.2f, 0.2f, 0.2f, 0.6f)
+        };
+        _hudRoot.AddChild(bg);
+
+        _expBar = new TextureProgressBar
+        {
+            Name = "ExpBar",
+            Position = new Vector2(22, 95),
+            Size = new Vector2(296, 10),
+            MaxValue = 1f,
+            Value = 0f,
+            FillMode = TextureProgressBar.FillModeEnum.LeftToRight,
+            Modulate = new Color(0.6f, 0.3f, 0.9f)
+        };
+        _hudRoot.AddChild(_expBar);
+    }
+
+    private void UpdateExpBar()
+    {
+        if (_exp == null)
+        {
+            _exp = _player?.GetNodeOrNull<ExperienceManager>("ExperienceManager");
+            return;
+        }
+        _expBar.MaxValue = 1f;
+        _expBar.Value = _exp.ExpProgress;
+    }
+
+    // ── 技能槽 ──
+
+    private Button[] _skillButtons = new Button[4];
+
+    private void CreateSkillSlots()
+    {
+        for (var i = 0; i < 4; i++)
+        {
+            var btn = new Button
+            {
+                Position = new Vector2(1300 + i * 70, 850),
+                Size = new Vector2(60, 60),
+                Text = $"{i + 1}",
+                Flat = false,
+                Disabled = true
+            };
+            _hudRoot.AddChild(btn);
+            _skillButtons[i] = btn;
+        }
+    }
+
+    private void UpdateSkillSlots()
+    {
+        if (_magic == null)
+        {
+            _magic = _player?.GetNodeOrNull<MagicSystem>("MagicSystem");
+            return;
+        }
+
+        for (var i = 0; i < 4; i++)
+        {
+            if (i < _magic.LearnedSpells.Count)
+            {
+                var spell = _magic.LearnedSpells[i];
+                var cd = _magic.GetCooldownRemaining(spell);
+                _skillButtons[i].Text = cd > 0
+                    ? $"{i + 1}\n{cd:F1}s"
+                    : $"{i + 1}\n{spell.Name}";
+                _skillButtons[i].Disabled = cd > 0;
+            }
         }
     }
 }

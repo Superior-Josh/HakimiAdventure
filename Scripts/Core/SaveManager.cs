@@ -23,6 +23,15 @@ public partial class SaveManager : Node
     public int     Gold              { get; set; } = 0;
     public string  LastScene         { get; set; } = "";
 
+    // ── Sprint 4 扩展 ──
+    public int     Level             { get; set; } = 1;
+    public int     CurrentExp        { get; set; }
+    public int     StatPoints        { get; set; }
+    public int     Strength          { get; set; } = 5;
+    public int     Agility           { get; set; } = 5;
+    public string  LearnedSpells     { get; set; } = ""; // 逗号分隔 ID
+    public string  InventoryData     { get; set; } = ""; // itemID:count;...
+
     // ── 生命周期 ──
 
     public override void _EnterTree()
@@ -45,6 +54,13 @@ public partial class SaveManager : Node
         cfg.SetValue(Section, "MP",  MP);
         cfg.SetValue(Section, "Gold", Gold);
         cfg.SetValue(Section, "LastScene", LastScene);
+        cfg.SetValue(Section, "Level", Level);
+        cfg.SetValue(Section, "CurrentExp", CurrentExp);
+        cfg.SetValue(Section, "StatPoints", StatPoints);
+        cfg.SetValue(Section, "Strength", Strength);
+        cfg.SetValue(Section, "Agility", Agility);
+        cfg.SetValue(Section, "LearnedSpells", LearnedSpells);
+        cfg.SetValue(Section, "InventoryData", InventoryData);
 
         var err = cfg.Save(SavePath);
         if (err != Error.Ok)
@@ -66,6 +82,13 @@ public partial class SaveManager : Node
         MP   = (float)cfg.GetValue(Section, "MP",   50f);
         Gold = (int)cfg.GetValue(Section, "Gold", 0);
         LastScene = (string)cfg.GetValue(Section, "LastScene", "");
+        Level = (int)cfg.GetValue(Section, "Level", 1);
+        CurrentExp = (int)cfg.GetValue(Section, "CurrentExp", 0);
+        StatPoints = (int)cfg.GetValue(Section, "StatPoints", 0);
+        Strength = (int)cfg.GetValue(Section, "Strength", 5);
+        Agility = (int)cfg.GetValue(Section, "Agility", 5);
+        LearnedSpells = (string)cfg.GetValue(Section, "LearnedSpells", "");
+        InventoryData = (string)cfg.GetValue(Section, "InventoryData", "");
     }
 
     /// <summary> 是否有存档 </summary>

@@ -1,6 +1,9 @@
 using Godot;
 using HakimiAdventure.Audio;
 using HakimiAdventure.Dialogue;
+using HakimiAdventure.Inventory;
+using HakimiAdventure.Magic;
+using HakimiAdventure.Growth;
 using HakimiAdventure.Core;
 
 namespace HakimiAdventure.Player;
@@ -39,6 +42,10 @@ public partial class PlayerController : CharacterBody3D, IDamageable
     private LockOnSystem     _lockOn = null!;
     private SaveManager      _save = null!;
     private DialogueController _dialogue = null!;
+    private InventorySystem    _inventory = null!;
+    private MagicSystem        _magic = null!;
+    private ExperienceManager  _exp = null!;
+    private AttributeSystem    _attr = null!;
     private float _footstepTimer;
     private Vector3 _targetVelocity;
     private CharacterAnimState _currentAnim;
@@ -52,6 +59,10 @@ public partial class PlayerController : CharacterBody3D, IDamageable
         _stamina    = GetNode<StaminaManager>("StaminaManager");
         _weapon     = GetNode<WeaponController>("WeaponController");
         _lockOn     = GetNode<LockOnSystem>("LockOnSystem");
+        _inventory  = GetNode<InventorySystem>("InventorySystem");
+        _magic      = GetNode<MagicSystem>("MagicSystem");
+        _exp        = GetNode<ExperienceManager>("ExperienceManager");
+        _attr       = GetNode<AttributeSystem>("AttributeSystem");
 
         AddToGroup("player");
         CurrentHP = MaxHP;
@@ -106,8 +117,16 @@ public partial class PlayerController : CharacterBody3D, IDamageable
 
         if (@event.IsActionPressed("interact") && Input.MouseMode == Input.MouseModeEnum.Captured)
         {
-            TryInteractWithNpc();
+            // 优先检测 NPC，再检测可拾取物品
+            if (!TryInteractWithNpc())
+                TryPickupItem();
         }
+
+        // 技能快捷键
+        if (@event.IsActionPressed("skill_1")) _magic?.CastSpell(0);
+        if (@event.IsActionPressed("skill_2")) _magic?.CastSpell(1);
+        if (@event.IsActionPressed("skill_3")) _magic?.CastSpell(2);
+        if (@event.IsActionPressed("skill_4")) _magic?.CastSpell(3);
 
         if (@event.IsActionPressed("menu"))
         {
@@ -240,21 +259,42 @@ public partial class PlayerController : CharacterBody3D, IDamageable
 
     // ── NPC 交互 ──
 
-    private void TryInteractWithNpc()
+    private bool TryInteractWithNpc()
     {
-        if (_dialogue != null && _dialogue.IsDialogueActive()) return;
+        if (_dialogue != null && _dialogue.IsDialogueActive()) return false;
 
-        var space = GetWorld3D().DirectSpaceState;
-        var from = _camera!.GlobalPosition;
-        var to = from - _camera.GlobalTransform.Basis.Z * 5f;
-
-        var query = PhysicsRayQueryParameters3D.Create(from, to);
-        query.CollideWithAreas = false;
-        var result = space.IntersectRay(query);
-
-        if (result.Count > 0 && result["collider"].AsGodotObject() is Npc npc)
+        var hit = RaycastFromCamera(5f);
+        if (hit.Count > 0 && hit["collider"].AsGodotObject() is Npc npc)
         {
             npc.Interact();
+            return true;
         }
+        return false;
+    }
+
+    private void TryPickupItem()
+    {
+        var hit = RaycastFromCamera(3f);
+        if (hit.Count > 0 && hit["collider"].AsGodotObject() is PickupItem pickup)
+        {
+            pickup.Pickup(this);
+        }
+    }
+
+    private Godot.Collections.Dictionary RaycastFromCamera(float distance)
+    {
+        var space = GetWorld3D().DirectSpaceState;
+        var from = _camera!.GlobalPosition;
+        var to = from - _camera.GlobalTransform.Basis.Z * distance;
+        var query = PhysicsRayQueryParameters3D.Create(from, to);
+        query.CollideWithAreas = true;
+        return space.IntersectRay(query);
+    }
+
+    // ── 添加经验 ──
+
+    public void AddExpReward(int amount)
+    {
+        _exp?.AddExp(amount);
     }
 }
