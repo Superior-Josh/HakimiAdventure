@@ -1,9 +1,14 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=30 format=3]
 
 ; ── 外部资源 ──
 
 [ext_resource type="Script" path="res://Scripts/Player/PlayerController.cs" id="1"]
 [ext_resource type="Script" path="res://Scripts/Player/CameraController.cs" id="2"]
+[ext_resource type="Script" path="res://Scripts/Combat/StaminaManager.cs" id="3"]
+[ext_resource type="Script" path="res://Scripts/Combat/WeaponController.cs" id="4"]
+[ext_resource type="Script" path="res://Scripts/Combat/LockOnSystem.cs" id="5"]
+[ext_resource type="Script" path="res://Scripts/Enemy/EnemyAI.cs" id="6"]
+[ext_resource type="Script" path="res://Scripts/UI/HUD.cs" id="7"]
 
 ; ── 子资源 ──
 
@@ -68,6 +73,21 @@ material = SubResource("mat_light_wall")
 [sub_resource type="CapsuleShape3D" id="shape_player"]
 radius = 0.3
 height = 1.6
+
+; ── 敌人资源 ──
+
+[sub_resource type="StandardMaterial3D" id="mat_enemy"]
+albedo_color = Color(0.85, 0.15, 0.15, 1)
+metallic = 0.1
+roughness = 0.6
+
+[sub_resource type="CapsuleShape3D" id="shape_enemy"]
+radius = 0.35
+height = 1.4
+
+[sub_resource type="BoxMesh" id="box_enemy_body"]
+size = Vector3(0.7, 1.2, 0.5)
+material = SubResource("mat_enemy")
 
 ; ── 场景树 ──
 
@@ -166,6 +186,34 @@ script = ExtResource("2")
 shape = SubResource("shape_player")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Player"]
+
+[node name="StaminaManager" type="Node" parent="Player"]
+script = ExtResource("3")
+
+[node name="WeaponController" type="Node3D" parent="Player"]
+script = ExtResource("4")
+
+[node name="LockOnSystem" type="Node" parent="Player"]
+script = ExtResource("5")
+
+; ── 敌人 ──
+
+[node name="Goblin" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, 4)
+script = ExtResource("6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Goblin"]
+shape = SubResource("shape_enemy")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Goblin"]
+mesh = SubResource("box_enemy_body")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Goblin"]
+
+; ── HUD ──
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("7")
 
 ; ── OmniLight 补光 ──
 

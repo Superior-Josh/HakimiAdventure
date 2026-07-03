@@ -1,4 +1,5 @@
 using Godot;
+using HakimiAdventure.Combat;
 using HakimiAdventure.Core;
 
 namespace HakimiAdventure.Player;
@@ -7,7 +8,7 @@ namespace HakimiAdventure.Player;
 /// 第一人称玩家控制器 — WASD 移动 + 鼠标视角 + 重力/碰撞。
 /// </summary>
 [GlobalClass]
-public partial class PlayerController : CharacterBody3D
+public partial class PlayerController : CharacterBody3D, IDamageable
 {
     // ── 导出参数 ──
 
@@ -17,6 +18,10 @@ public partial class PlayerController : CharacterBody3D
     [Export] public float Acceleration  { get; set; } = 10.0f;
     [Export] public float AirControl    { get; set; } = 1.0f;
 
+    [ExportCategory("Combat")]
+    [Export] public float MaxHP  { get; set; } = 100f;
+    public        float CurrentHP { get; private set; }
+
     [ExportCategory("Mouse")]
     [Export] public float MouseSensitivity { get; set; } = 0.002f;
     [Export] public bool  InvertY         { get; set; } = false;
@@ -25,6 +30,9 @@ public partial class PlayerController : CharacterBody3D
 
     private CameraController _camera = null!;
     private AnimationPlayer  _animPlayer = null!;
+    private StaminaManager   _stamina = null!;
+    private WeaponController _weapon = null!;
+    private LockOnSystem     _lockOn = null!;
     private Vector3 _targetVelocity;
     private CharacterAnimState _currentAnim;
 
@@ -34,6 +42,12 @@ public partial class PlayerController : CharacterBody3D
     {
         _camera     = GetNode<CameraController>("Camera3D");
         _animPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        _stamina    = GetNode<StaminaManager>("StaminaManager");
+        _weapon     = GetNode<WeaponController>("WeaponController");
+        _lockOn     = GetNode<LockOnSystem>("LockOnSystem");
+
+        AddToGroup("player");
+        CurrentHP = MaxHP;
         Input.MouseMode = Input.MouseModeEnum.Captured;
     }
 
@@ -48,6 +62,23 @@ public partial class PlayerController : CharacterBody3D
             var vertical = motion.Relative.Y * MouseSensitivity;
             if (InvertY) vertical = -vertical;
             _camera?.AddVerticalRotation(-vertical);
+        }
+
+        if (@event.IsActionPressed("attack") && Input.MouseMode == Input.MouseModeEnum.Captured)
+        {
+            if (_stamina.HasStamina(_stamina.Config.LightAttackCost))
+            {
+                if (!_weapon.TryCombo())
+                {
+                    _stamina.ConsumeAttack(false);
+                    _weapon.StartAttack();
+                }
+            }
+        }
+
+        if (@event.IsActionPressed("lock_on"))
+        {
+            _lockOn?.ToggleLock();
         }
 
         if (@event.IsActionPressed("menu"))
@@ -112,24 +143,25 @@ public partial class PlayerController : CharacterBody3D
 
     // ── 公开接口 ──
 
-    /// <summary> 播放受击动画 </summary>
-    public void PlayHitAnimation()
+    /// <summary> 通用动画播放 </summary>
+    public void PlayAnim(CharacterAnimState state)
     {
-        _currentAnim = CharacterAnimState.Hit;
-        _animPlayer?.Play(CharacterAnimHelper.GetAnimName(CharacterAnimState.Hit));
+        _currentAnim = state;
+        _animPlayer?.Play(CharacterAnimHelper.GetAnimName(state));
     }
 
-    /// <summary> 播放死亡动画 </summary>
-    public void PlayDeathAnimation()
+    /// <summary> IDamageable: 受伤 </summary>
+    public void TakeDamage(float damage)
     {
-        _currentAnim = CharacterAnimState.Death;
-        _animPlayer?.Play(CharacterAnimHelper.GetAnimName(CharacterAnimState.Death));
-    }
+        CurrentHP -= damage;
+        PlayAnim(CharacterAnimState.Hit);
+        _camera?.Shake(new Vector3(2f, 1f, 0.5f));
 
-    /// <summary> 恢复空闲动画 </summary>
-    public void ResetAnimation()
-    {
-        _currentAnim = CharacterAnimState.Idle;
-        _animPlayer?.Play(CharacterAnimHelper.GetAnimName(CharacterAnimState.Idle));
+        if (CurrentHP <= 0)
+        {
+            CurrentHP = 0;
+            PlayAnim(CharacterAnimState.Death);
+            // Sprint 2 实现死亡惩罚
+        }
     }
 }
